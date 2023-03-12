@@ -155,4 +155,6 @@ static inline void xwl_glamor_init_eglstream(struct xwl_screen *xwl_screen)
 }
 #endif
 
+void xwl_glamor_init_hybris(struct xwl_screen *xwl_screen);
+
 #endif /* XWAYLAND_GLAMOR_H */

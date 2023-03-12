@@ -34,6 +34,10 @@ scanner = find_program(scanner_dep.get_pkgconfig_variable('wayland_scanner'))
 protocols_dep = dependency('wayland-protocols', version: wayland_protocols_req)
 protodir = protocols_dep.get_pkgconfig_variable('pkgdatadir')
 
+cc = meson.get_compiler('c')
+drihybris_dep = cc.find_library('drihybris', required: true)
+hybris_dep = dependency('hybris-egl-platform', required: true)
+
 pointer_xml = join_paths(protodir, 'unstable', 'pointer-constraints', 'pointer-constraints-unstable-v1.xml')
 relative_xml = join_paths(protodir, 'unstable', 'relative-pointer', 'relative-pointer-unstable-v1.xml')
 tablet_xml = join_paths(protodir, 'unstable', 'tablet', 'tablet-unstable-v2.xml')
@@ -42,6 +46,7 @@ xdg_output_xml = join_paths(protodir, 'unstable', 'xdg-output', 'xdg-output-unst
 dmabuf_xml = join_paths(protodir, 'unstable', 'linux-dmabuf', 'linux-dmabuf-unstable-v1.xml')
 viewporter_xml = join_paths(protodir, 'stable', 'viewporter', 'viewporter.xml')
 xdg_shell_xml = join_paths(protodir, 'stable', 'xdg-shell', 'xdg-shell.xml')
+android_xml = join_paths('.', 'wayland-android.xml')
 
 client_header = generator(scanner,
     output : '@BASENAME@-client-protocol.h',
@@ -66,6 +71,7 @@ srcs += client_header.process(xdg_output_xml)
 srcs += client_header.process(dmabuf_xml)
 srcs += client_header.process(viewporter_xml)
 srcs += client_header.process(xdg_shell_xml)
+srcs += client_header.process(android_xml)
 srcs += code.process(relative_xml)
 srcs += code.process(pointer_xml)
 srcs += code.process(tablet_xml)
@@ -74,11 +80,13 @@ srcs += code.process(xdg_output_xml)
 srcs += code.process(dmabuf_xml)
 srcs += code.process(viewporter_xml)
 srcs += code.process(xdg_shell_xml)
+srcs += code.process(android_xml)
 
 xwayland_glamor = []
 eglstream_srcs = []
 if build_glamor
     srcs += 'xwayland-glamor.c'
+    srcs += 'xwayland-glamor-hybris.c'
     if build_glx
         srcs += 'xwayland-glx.c'
     endif
@@ -105,6 +113,8 @@ if build_glamor
     srcs += client_header.process('drm.xml')
     srcs += code.process('drm.xml')
     xwayland_dep += gbm_dep
+    xwayland_dep += hybris_dep
+    xwayland_dep += drihybris_dep
     xwayland_glamor += glamor
 endif
 
