@@ -51,10 +51,8 @@ struct xwl_window {
     struct xorg_list window_buffers_available;
     struct xorg_list window_buffers_unavailable;
     OsTimerPtr window_buffers_timer;
-#ifdef GLAMOR_HAS_GBM
     struct xorg_list frame_callback_list;
     Bool present_flipped;
-#endif
 };
 
 struct xwl_window *xwl_window_get(WindowPtr window);
